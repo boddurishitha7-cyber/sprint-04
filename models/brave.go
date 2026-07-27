@@ -7,6 +7,7 @@ type EventFile struct {
 }
 
 type TelemetryEvent struct {
+	TraceID       string    `json:"TraceID"`
 	EventID       string    `json:"EventID"`
 	EventType     string    `json:"EventType"`
 	Source        string    `json:"Source"`

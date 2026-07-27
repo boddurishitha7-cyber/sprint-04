@@ -1,6 +1,6 @@
 {
   "Events": [
-    {
+    {  "TraceID":"1",
       "EventID": "evt-001",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -16,7 +16,7 @@
         "ServiceStatus": "down"
       }
     },
-    {
+    {"TraceID":"2",
       "EventID": "evt-002",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -32,7 +32,7 @@
         "ServiceStatus": "degraded"
       }
     },
-    {
+    {"TraceID":"3",
       "EventID": "evt-003",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -48,7 +48,7 @@
         "ServiceStatus": "failed"
       }
     },
-    {
+    {"TraceID":"4",
       "EventID": "evt-004",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -64,7 +64,7 @@
         "ServiceStatus": "degraded"
       }
     },
-    {
+    {"TraceID":"5",
       "EventID": "evt-005",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -80,7 +80,7 @@
         "ServiceStatus": "degraded"
       }
     },
-    {
+   {"TraceID":"6",
       "EventID": "evt-006",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -96,7 +96,7 @@
         "ServiceStatus": "warning"
       }
     },
-    {
+    {"TraceID":"7",
       "EventID": "evt-007",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -112,7 +112,7 @@
         "ServiceStatus": "critical"
       }
     },
-    {
+    {"TraceID":"8",
       "EventID": "evt-008",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -128,7 +128,7 @@
         "ServiceStatus": "backlogged"
       }
     },
-{
+{"TraceID":"9",
       "EventID": "evt-009",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -144,7 +144,7 @@
         "ServiceStatus": "down"
       }
     },
-    {
+    {"TraceID":"10",
       "EventID": "evt-010",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -160,7 +160,7 @@
         "ServiceStatus": "overloaded"
       }
     },
-    {
+    {"TraceID":"11",
       "EventID": "evt-011",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -176,7 +176,7 @@
         "ServiceStatus": "unreachable"
       }
     },
-    {
+    {"TraceID":"12",
       "EventID": "evt-012",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -192,7 +192,7 @@
         "ServiceStatus": "isolated"
       }
     },
-    {
+    {"TraceID":"13",
       "EventID": "evt-013",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -208,7 +208,7 @@
         "ServiceStatus": "misconfigured"
       }
     },
-    {
+    {"TraceID":"14",
       "EventID": "evt-014",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -224,7 +224,7 @@
         "ServiceStatus": "rollback"
       }
     },
-    {
+    {"TraceID":"15",
       "EventID": "evt-015",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",
@@ -240,7 +240,7 @@
         "ServiceStatus": "failed"
       }
     },
-    {
+    {"TraceID":"16",
       "EventID": "evt-016",
       "EventType": "TelemetryReceived",
       "Source": "telemetry-service",

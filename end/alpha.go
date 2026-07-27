@@ -13,6 +13,7 @@ type Health struct {
 	Service   string `json:"service"`
 	Version   string `json:"version"`
 	Timestamp string `json:"timestamp"`
+	TraceID   string `json:"TraceID"`
 }
 
 func main() {
@@ -30,6 +31,7 @@ func main() {
 		Service:   "api-gateway",
 		Version:   "v1.0.0",
 		Timestamp: time.Now().Format(time.RFC3339),
+		TraceID:   "5",
 	}
 
 	// Convert to JSON

@@ -3,6 +3,7 @@ package models
 import "time"
 
 type Log struct {
+	TraceID    string   
 	ID          int
 	ServiceName string
 	LogLevel    string

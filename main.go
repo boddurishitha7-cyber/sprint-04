@@ -29,9 +29,11 @@ func main() {
 
 	fmt.Println("Connected to NATS")
 
-	_, err = nc.Subscribe("infrastructure.health", func(msg *nats.Msg) {
+	_, err = nc.Subscribe ("infrastructure.health", func(msg *nats.Msg) {
+
 
 		fmt.Println("Received a message!")
+		fmt.Println("Subscribed successfully")
 
 		var health models.Health
 
@@ -75,6 +77,7 @@ func process(nc *nats.Conn, health models.Health) {
 
 	fmt.Println("Health Endpoint Data")
 	fmt.Println("-----------------------------")
+	fmt.Println("Trace Id  :",health.TraceID)
 	fmt.Println("Status    :", health.Status)
 	fmt.Println("Service   :", health.Service)
 	fmt.Println("Version   :", health.Version)
@@ -166,6 +169,7 @@ func process(nc *nats.Conn, health models.Health) {
 		//  the validation code HERE
 
 		telemetry := models.Telemetry{
+			
 			ServiceName:   matched.Payload.Service,
 			CPUUsage:      matched.Payload.CPUUsage,
 			MemoryUsage:   matched.Payload.MemoryUsage,

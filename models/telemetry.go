@@ -3,6 +3,7 @@ package models
 import "time"
 
 type Telemetry struct {
+	TraceId       string
 	ServiceName   string
 	CPUUsage      float64
 	MemoryUsage   float64

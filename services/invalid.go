@@ -1,3 +1,4 @@
+// trace Id
 package services
 
 import (
@@ -19,7 +20,7 @@ func InsertInvalidTelemetry(event models.TelemetryEvent, validationError string)
 		context.Background(),
 		`
 		INSERT INTO invalid_telemetry
-		(
+		(   "TraceID",
 			"EventID",
 			"EventType",
 			"Source",
@@ -35,8 +36,9 @@ func InsertInvalidTelemetry(event models.TelemetryEvent, validationError string)
 			"ValidationError"
 		)
 		VALUES
-		($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+		($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
 		`,
+		event.TraceID,
 		event.EventID,
 		event.EventType,
 		event.Source,
