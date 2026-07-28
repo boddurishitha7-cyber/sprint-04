@@ -1,10 +1,10 @@
 package services
 
 import (
-    "context"
+	"context"
 
-    "telemetry-collector/db"
-    "telemetry-collector/models"
+	"telemetry-collector/db"
+	"telemetry-collector/models"
 )
 
 func InsertLog(log models.Log) error {
@@ -18,13 +18,15 @@ func InsertLog(log models.Log) error {
 	_, err = conn.Exec(
 		context.Background(),
 		`INSERT INTO logs
-		(service_name, log_level, message, failure_type, event_time)
-		VALUES ($1, $2, $3, $4, $5)`,
+		(service_name, log_level, message, failure_type, event_time
+		,"TraceID") VALUES ($1, $2, $3, $4, $5,$6)`,
+
 		log.ServiceName,
 		log.LogLevel,
 		log.Message,
 		log.FailureType,
 		log.EventTime,
+		log.TraceID,
 	)
 
 	return err

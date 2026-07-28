@@ -29,8 +29,7 @@ func main() {
 
 	fmt.Println("Connected to NATS")
 
-	_, err = nc.Subscribe ("infrastructure.health", func(msg *nats.Msg) {
-
+	_, err = nc.Subscribe("infrastructure.health", func(msg *nats.Msg) {
 
 		fmt.Println("Received a message!")
 		fmt.Println("Subscribed successfully")
@@ -77,7 +76,7 @@ func process(nc *nats.Conn, health models.Health) {
 
 	fmt.Println("Health Endpoint Data")
 	fmt.Println("-----------------------------")
-	fmt.Println("Trace Id  :",health.TraceID)
+	fmt.Println("Trace Id  :", health.TraceID)
 	fmt.Println("Status    :", health.Status)
 	fmt.Println("Service   :", health.Service)
 	fmt.Println("Version   :", health.Version)
@@ -139,6 +138,7 @@ func process(nc *nats.Conn, health models.Health) {
 
 	for i, matched := range matchedEvents {
 		fmt.Printf("\nEvent %d\n", i+1)
+		fmt.Println("Trace ID      :", matched.TraceID)
 		fmt.Println("Event ID      :", matched.EventID)
 		fmt.Println("Failure Type  :", matched.Payload.FailureType)
 		fmt.Println("Service       :", matched.Payload.Service)
@@ -169,7 +169,8 @@ func process(nc *nats.Conn, health models.Health) {
 		//  the validation code HERE
 
 		telemetry := models.Telemetry{
-			
+
+			TraceID:       health.TraceID,
 			ServiceName:   matched.Payload.Service,
 			CPUUsage:      matched.Payload.CPUUsage,
 			MemoryUsage:   matched.Payload.MemoryUsage,
@@ -187,6 +188,7 @@ func process(nc *nats.Conn, health models.Health) {
 			}
 
 			log := models.Log{
+				TraceID:     health.TraceID,
 				ServiceName: matched.Payload.Service,
 				LogLevel:    "ERROR",
 				Message:     err.Error(),
@@ -211,7 +213,7 @@ func process(nc *nats.Conn, health models.Health) {
 			context.Background(),
 			`
 		INSERT INTO telemetry
-		(
+		(   "TraceID",
 			"EventID",
 			"EventType",
 			"Source",
@@ -226,8 +228,8 @@ func process(nc *nats.Conn, health models.Health) {
 			"ServiceStatus"
 		)
 		VALUES
-		($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-		`,
+		($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+		`, health.TraceID,
 			matched.EventID,
 			matched.EventType,
 			matched.Source,
@@ -247,6 +249,7 @@ func process(nc *nats.Conn, health models.Health) {
 		}
 
 		log := models.Log{
+			TraceID:     health.TraceID,
 			ServiceName: matched.Payload.Service,
 			LogLevel:    "INFO",
 			Message:     "Telemetry inserted successfully",
@@ -273,7 +276,19 @@ func process(nc *nats.Conn, health models.Health) {
 	fmt.Println("All matched events processed successfully!")
 	fmt.Println("\n================ METRICS TABLE ================")
 
-	rows, err := conn.Query(context.Background(), "SELECT * FROM telemetry")
+	rows, err := conn.Query(context.Background(), `SELECT  "TraceID",
+    "EventID",
+    "EventType",
+    "Source",
+    "CorrelationID",
+    "Timestamp",
+    "FailureType",
+    "Service",
+    "CPUUsage",
+    "MemoryUsage",
+    "ResponseTime",
+    "ErrorCount",
+    "ServiceStatus" FROM telemetry`)
 	if err != nil {
 		panic(err)
 	}
@@ -285,13 +300,16 @@ func process(nc *nats.Conn, health models.Health) {
 	fmt.Println("--------------------------------------------------------------------------")
 
 	for rows.Next() {
-		var eventID, eventType, source, correlationID string
+
+		var traceID, eventID, eventType, source, correlationID string
 		var timestamp time.Time
 		var failureType, service, status string
 		var cpuUsage, memoryUsage, responseTime float64
 		var errorCount int
 
 		err = rows.Scan(
+			&traceID,
+
 			&eventID,
 			&eventType,
 			&source,
@@ -309,7 +327,8 @@ func process(nc *nats.Conn, health models.Health) {
 			panic(err)
 		}
 
-		fmt.Printf("%-10s %-15s %-8.2f %-8.2f %-8.2f %-8d %-10s\n",
+		fmt.Printf("%-10s %-10s %-15s %-8.2f %-8.2f %-8.2f %-8d %-10s\n",
+			traceID,
 			eventID,
 			service,
 			cpuUsage,
@@ -327,13 +346,13 @@ func process(nc *nats.Conn, health models.Health) {
 	}
 	defer rows3.Close()
 
-	fmt.Printf("%-10s %-15s %-8s %-8s %-8s %-8s %-10s %-40s\n",
-		"EventID", "Service", "CPU", "Memory", "Resp", "Errors", "Status", "Validation Error")
+	fmt.Printf("%-10s %-10s %-15s %-8s %-8s %-8s %-8s %-10s %-40s\n",
+		"EventID", "Service", "CPU", "Memory", "Resp", "Errors", "Status", "Validation Error", "time stamp")
 
 	fmt.Println("---------------------------------------------------------------------------------------------------------------")
 
 	for rows3.Next() {
-		var eventID, eventType, source, correlationID string
+		var traceID, eventID, eventType, source, correlationID string
 		var timestamp time.Time
 		var failureType, service, status string
 		var cpuUsage, memoryUsage, responseTime float64
@@ -341,6 +360,7 @@ func process(nc *nats.Conn, health models.Health) {
 		var validationError string
 
 		err = rows3.Scan(
+			&traceID,
 			&eventID,
 			&eventType,
 			&source,
@@ -378,30 +398,33 @@ func process(nc *nats.Conn, health models.Health) {
 	}
 	defer rows2.Close()
 
-	fmt.Printf("%-4s %-18s %-8s %-35s %-18s %-20s\n",
-		"ID", "Service", "Level", "Message", "Failure Type", "Event Time")
+	fmt.Printf("%-4s  %-10s %-18s %-8s %-35s %-18s %-20s\n",
+		"ID", "trace ID", "Service", "Level", "Message", "Failure Type", "Event Time")
 
 	fmt.Println("---------------------------------------------------------------------------------------------------------------")
 
 	for rows2.Next() {
 		var id int
-		var serviceName, logLevel, message, failureType string
+		var traceID, serviceName, logLevel, message, failureType string
 		var eventTime time.Time
 
 		err = rows2.Scan(
 			&id,
+			&failureType,
 			&serviceName,
 			&logLevel,
 			&message,
-			&failureType,
+
 			&eventTime,
+			&traceID,
 		)
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Printf("%-4d %-18s %-8s %-35s %-18s %-20s\n",
+		fmt.Printf("%-4d %-10s %-18s %-8s %-35s %-18s %-20s\n",
 			id,
+			traceID,
 			serviceName,
 			logLevel,
 			message,
