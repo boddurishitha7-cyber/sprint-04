@@ -59,8 +59,8 @@ func main() {
 
 	// Start API server in another goroutine
 	go func() {
-		fmt.Println("API Server running on :8085")
-		err := http.ListenAndServe(":8085", nil)
+		fmt.Println("API Server running on :8082")
+		err := http.ListenAndServe(":8082", nil)
 		if err != nil {
 			panic(err)
 		}
@@ -294,8 +294,8 @@ func process(nc *nats.Conn, health models.Health) {
 	}
 	defer rows.Close()
 
-	fmt.Printf("%-10s %-15s %-8s %-8s %-8s %-8s %-10s\n",
-		"EventID", "Service", "CPU", "Memory", "Resp", "Errors", "Status")
+	fmt.Printf("%-10s %-10s %-15s %-8s %-8s %-8s %-8s %-10s\n",
+		"TraceID", "EventID", "Service", "CPU", "Memory", "Resp", "Errors", "Status")
 
 	fmt.Println("--------------------------------------------------------------------------")
 
@@ -346,8 +346,8 @@ func process(nc *nats.Conn, health models.Health) {
 	}
 	defer rows3.Close()
 
-	fmt.Printf("%-10s %-10s %-15s %-8s %-8s %-8s %-8s %-10s %-40s\n",
-		"EventID", "Service", "CPU", "Memory", "Resp", "Errors", "Status", "Validation Error", "time stamp")
+	fmt.Printf("%-10s %-10s %-15s %-8s %-8s %-8s %-8s %-10s %-40s %-20s\n",
+		"TraceID", "EventID", "Service", "CPU", "Memory", "Resp", "Errors", "Status", "Validation Error", "time stamp")
 
 	fmt.Println("---------------------------------------------------------------------------------------------------------------")
 
@@ -379,16 +379,19 @@ func process(nc *nats.Conn, health models.Health) {
 			panic(err)
 		}
 
-		fmt.Printf("%-10s %-15s %-8.2f %-8.2f %-8.2f %-8d %-10s %-40s\n",
-			eventID,
-			service,
-			cpuUsage,
-			memoryUsage,
-			responseTime,
-			errorCount,
-			status,
-			validationError,
-		)
+		fmt.Printf("%-10s %-10s %-15s %-8.2f %-8.2f %-8.2f %-8d %-10s %-40s %-20s\n",
+    traceID,
+    eventID,
+    service,
+    cpuUsage,
+    memoryUsage,
+    responseTime,
+    errorCount,
+    status,
+    validationError,
+    timestamp.Format("2006-01-02 15:04:05"),
+)
+
 	}
 	fmt.Println("\n================ LOGS TABLE ================")
 
@@ -409,15 +412,15 @@ func process(nc *nats.Conn, health models.Health) {
 		var eventTime time.Time
 
 		err = rows2.Scan(
-			&id,
-			&failureType,
-			&serviceName,
-			&logLevel,
-			&message,
-
-			&eventTime,
-			&traceID,
-		)
+            &id,
+            &failureType,
+            &serviceName,
+            &logLevel,
+            &message,
+			
+            &eventTime,
+            &traceID,
+        )
 		if err != nil {
 			panic(err)
 		}
